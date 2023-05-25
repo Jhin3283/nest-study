@@ -1,45 +1,41 @@
 import {
-  Body,
   Controller,
   Get,
-  Param,
   Post,
-  Query,
-  Res,
-  HttpStatus,
+  Put,
+  Delete,
+  Body,
+  Param,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UserLoginDto } from './dto/user-login.dto';
-import { VerifyEmailDto } from './dto/verify-email.dto';
-import { Response } from 'express';
-import { UserInfo } from './UserInfo';
+import { UsersService } from './users.service';
+import { User } from './user.interface';
 
 @Controller('users')
 export class UsersController {
-  @Post('/')
-  async createUser(
-    @Body() dto: CreateUserDto,
-    @Res() res: Response,
-  ): Promise<Response> {
-    console.log(dto);
-    return res.status(HttpStatus.CREATED).send();
+  constructor(private readonly usersService: UsersService) {}
+
+  @Post()
+  create(@Body() user: User): void {
+    this.usersService.create(user);
   }
 
-  @Post('/email-verify')
-  async verifyEmail(@Query() dto: VerifyEmailDto): Promise<string> {
-    console.log(dto);
-    return;
+  @Get()
+  findAll(): User[] {
+    return this.usersService.findAll();
   }
 
-  @Post('/login')
-  async login(@Body() dto: UserLoginDto): Promise<string> {
-    console.log(dto);
-    return;
+  @Get(':id')
+  findOne(@Param('id') id: number): User {
+    return this.usersService.findOne(+id);
   }
 
-  @Get('/:id')
-  async getUserInfo(@Param('id') userId: number): Promise<UserInfo> {
-    console.log(userId);
-    return;
+  @Put(':id')
+  update(@Param('id') id: number, @Body() user: User): void {
+    this.usersService.update(id, user);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: number): void {
+    this.usersService.delete(+id);
   }
 }
